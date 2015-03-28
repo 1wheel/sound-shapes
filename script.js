@@ -1,9 +1,9 @@
 var effects = {}
 
-effects.panner = new Tone.AutoPanner({
-  "frequency" : .5,
-  "amount" : 0
-}).toMaster();
+// effects.panner = new Tone.AutoPanner({
+//   "frequency" : .5,
+//   "amount" : 0
+// }).toMaster();
 
 
 effects.feedbackDelay = new Tone.PingPongDelay({
@@ -21,8 +21,10 @@ var players = [
     'snare', 
     // 'agogoHigh', 
     // 'agogoLow', 
-    // 'B1', 
-    'hh', 
+    'B1', 
+    'D2', 
+    'G2',
+    // 'hh', 
     // 'hho', 
     'kick'
   ]
@@ -75,7 +77,7 @@ var lines = svg.dataAppend(pairs, 'path')
     .style({'stroke': 'black'})
 
 var shapes = svg.dataAppend(effectsArray, 'path')
-    .attr('d', ['M', [-5,-5], 'L', [5, -5], 'L', [5,5], 'L', [-5,5]].join(''))
+    .attr('d', ['M', [-5,-5], 'L', [3, -5], 'L', [5,5], 'L', [-5,5], 'L', [-10, 5]].join(''))
 
 d3.timer(function(t){
 
@@ -99,8 +101,10 @@ d3.timer(function(t){
       d.active = true
 
       try{
+        d.s.player.effects[d.e.key].stop()
         d.s.player.effects[d.e.key].start()
       } catch(e){
+        console.log('e')
 
       }
     })
