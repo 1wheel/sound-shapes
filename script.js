@@ -1,19 +1,20 @@
 var effects = {}
 
-effects.panner = new Tone.AutoPanner({
-  "frequency" : .5,
-  "amount" : 0
-}).toMaster();
+// effects.panner = new Tone.AutoPanner({
+//   "frequency" : .5,
+//   "amount" : 0
+// }).toMaster();
 
 
 effects.chorus = new Tone.Chorus(4, 2.5, 0.5).toMaster()
 effects.bitCrusher = new Tone.BitCrusher(6).toMaster()
+effects.autoWah = new Tone.AutoWah(100, 6, -20).toMaster()
 
-// effects.feedbackDelay = new Tone.PingPongDelay({
-//   "delayTime" : "8n",
-//   "feedback" : 0.6,
-//   "wet" : 0.5
-// }).toMaster();
+effects.feedbackDelay = new Tone.PingPongDelay({
+  "delayTime" : "8n",
+  "feedback" : 0.6,
+  "wet" : 0.5
+}).toMaster();
 
 var effectsArray = d3.entries(effects)
 
@@ -68,6 +69,9 @@ var circles = svg.dataAppend(sounds, 'circle')
       d3.select(this).style('fill', ƒ('player', 'str', color))
     })
     .style({cursor: 'pointer'})
+    .each(function(d){
+      d.sel = d3.select(this)
+    })
 
 
 effectsArray.forEach(function(d, i){
@@ -127,6 +131,8 @@ d3.timer(function(t){
       try{
         d.s.player.effects[d.e.key].stop()
         d.s.player.effects[d.e.key].start()
+        d.s.sel.transition().duration(500)
+            .attr('r', 50)
       } catch(e){
         console.log('e')
 
@@ -138,6 +144,9 @@ d3.timer(function(t){
       return d.active && !dist(d) })
     .forEach(function(d){
       d.active = false
+      d.s.sel.transition().duration(500)
+          .attr('r', 10)
+
     })
 
 
@@ -156,7 +165,7 @@ function dist(d){
   var dx = d.s.pos[0] - d.e.pos[0]
   var dy = d.s.pos[1] - d.e.pos[1]
 
-  return dx*dx + dy*dy < 80000
+  return dx*dx + dy*dy < 75000
 }
 
 
