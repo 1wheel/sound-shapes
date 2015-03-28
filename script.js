@@ -60,19 +60,6 @@ var sounds = d3.range(0, 2*Math.PI, .3).map(function(d){
   return rv
 })
 
-var color = d3.scale.category10()
-var circles = svg.dataAppend(sounds, 'circle')
-    .attr('r', 20)
-    .attr('fill', ƒ('player', 'str', color))
-    .on('click', function(d){
-      d.player = players[~~(Math.random()*players.length)]
-      d3.select(this).style('fill', ƒ('player', 'str', color))
-    })
-    .style({cursor: 'pointer'})
-    .each(function(d){
-      d.sel = d3.select(this)
-    })
-
 
 effectsArray.forEach(function(d, i){
   d.θ = 2*Math.PI*i/effectsArray.length
@@ -86,8 +73,27 @@ sounds.forEach(function(s){
   })
 })
 
+
+var color = d3.scale.category10()
+
+
+
 var lines = svg.dataAppend(pairs, 'path')
     .style({'stroke': 'black', 'pointer-events': 'none'})
+
+
+var circles = svg.dataAppend(sounds, 'circle')
+    .attr('r', 20)
+    .attr('fill', ƒ('player', 'str', color))
+    .on('click', function(d){
+      d.player = players[~~(Math.random()*players.length)]
+      d3.select(this).style('fill', ƒ('player', 'str', color))
+    })
+    .style({cursor: 'pointer'})
+    .each(function(d){
+      d.sel = d3.select(this)
+    })
+
 
 var shapes = svg.dataAppend(effectsArray, 'g')
     .style({cursor: 'pointer'})
