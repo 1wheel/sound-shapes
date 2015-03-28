@@ -1,18 +1,19 @@
 var effects = {}
 
-// effects.panner = new Tone.AutoPanner({
-//   "frequency" : .5,
-//   "amount" : 0
-// }).toMaster();
+effects.panner = new Tone.AutoPanner({
+  "frequency" : .5,
+  "amount" : 0
+}).toMaster();
 
 
 effects.chorus = new Tone.Chorus(4, 2.5, 0.5).toMaster()
+effects.bitCrusher = new Tone.BitCrusher(6).toMaster()
 
-effects.feedbackDelay = new Tone.PingPongDelay({
-  "delayTime" : "8n",
-  "feedback" : 0.6,
-  "wet" : 0.5
-}).toMaster();
+// effects.feedbackDelay = new Tone.PingPongDelay({
+//   "delayTime" : "8n",
+//   "feedback" : 0.6,
+//   "wet" : 0.5
+// }).toMaster();
 
 var effectsArray = d3.entries(effects)
 
@@ -39,11 +40,11 @@ var players = [
     return rv
   })
 
-var s = 540
+var s = 1000
 var margin = 20
 
-var iR = s/5
-var oR = s/3
+var iR = s/4
+var oR = s/2
 
 var svg = d3.select('body')
   .append('svg')
@@ -60,7 +61,7 @@ var sounds = d3.range(0, 2*Math.PI, .3).map(function(d){
 
 var color = d3.scale.category10()
 var circles = svg.dataAppend(sounds, 'circle')
-    .attr('r', 10)
+    .attr('r', 20)
     .attr('fill', ƒ('player', 'str', color))
     .on('click', function(d){
       d.player = players[~~(Math.random()*players.length)]
@@ -71,6 +72,7 @@ var circles = svg.dataAppend(sounds, 'circle')
 
 effectsArray.forEach(function(d, i){
   d.θ = 2*Math.PI*i/effectsArray.length
+  d.on = true
 })
 
 var pairs = []
@@ -83,13 +85,26 @@ sounds.forEach(function(s){
 var lines = svg.dataAppend(pairs, 'path')
     .style({'stroke': 'black', 'pointer-events': 'none'})
 
-var shapes = svg.dataAppend(effectsArray, 'path')
-    .attr('d', ['M', [-5,-5], 'L', [3, -5], 'L', [5,5], 'L', [-5,5], 'L', [-10, 5]].join(''))
+var shapes = svg.dataAppend(effectsArray, 'g')
+    .style({cursor: 'pointer'})
+    .on('click', function(d){
+      console.log('click')
+      d.on = !d.on
+      d3.select(this).style('opacity', d.on ? 1 : .1)
+    })
+
+shapes.append('path')
+    .attr('d', ['M', [-15,-15], 'L', [3, -15], 'L', [15,15], 'L', [-15,15], 'L', [-10, 15]].join(''))
+
+shapes.append('text')
+    .text(ƒ('key'))
+    .attr('text-anchor', 'middle')
+    .attr('dy', 30)
 
 d3.timer(function(t){
 
   sounds.forEach(function(d){
-    d.curθ = (d.θ + t/2000) 
+    d.curθ = (d.θ + t/3000) 
     d.pos = [Math.cos(d.curθ)*iR, Math.sin(d.curθ)*iR]
   })
 
@@ -105,6 +120,8 @@ d3.timer(function(t){
     .filter(function(d){
       return !d.active && dist(d) })
     .forEach(function(d){
+      if (!d.e.on) return 
+
       d.active = true
 
       try{
@@ -139,7 +156,7 @@ function dist(d){
   var dx = d.s.pos[0] - d.e.pos[0]
   var dy = d.s.pos[1] - d.e.pos[1]
 
-  return dx*dx + dy*dy < 10000
+  return dx*dx + dy*dy < 80000
 }
 
 
