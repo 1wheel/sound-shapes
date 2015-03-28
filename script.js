@@ -58,7 +58,7 @@ effectsArray.forEach(function(d, i){
 var pairs = []
 sounds.forEach(function(s){
   effectsArray.forEach(function(e){
-    pairs.push({s: s, e: e, lastPlay: -10000})
+    pairs.push({s: s, e: e, lastPlay: -10000, active: false})
   })
 })
 
@@ -71,34 +71,50 @@ var shapes = svg.dataAppend(effectsArray, 'path')
 d3.timer(function(t){
 
   sounds.forEach(function(d){
-    d.curθ = d.θ + t/1000
+    d.curθ = (d.θ + t/4000) 
     d.pos = [Math.cos(d.curθ)*iR, Math.sin(d.curθ)*iR]
   })
 
   effectsArray.forEach(function(d){
-    d.pos = [Math.cos(d.θ + t*0)*oR, Math.sin(d.θ + t*0)*oR]
+    d.pos = [Math.cos(d.θ + -t*0.0001)*oR, Math.sin(d.θ + -t*0.0001)*oR]
   })
 
 
   circles.translate(ƒ('pos'))
   shapes.translate(ƒ('pos'))
 
-  lines.attr('d', function(d){
-    return ['M', d.e.pos, 'L', d.s.pos].join('')
-  })
+  pairs
+    .filter(function(d){
+      return !d.active && dist(d) })
+    .forEach(function(d){
+      d.active = true
+    })
+
+  pairs
+    .filter(function(d){
+      return d.active && !dist(d) })
+    .forEach(function(d){
+      d.active = false
+    })
+
+
+  lines
+      // .style('stroke', function(d){ return d.active ? 'green' : 'blue' })
+      .style('opacity', function(d){ return d.active ? 1 : .05 })
+      .attr('d', function(d){
+        return ['M', d.e.pos, 'L', d.s.pos].join('') })
+
 })
 
 
+function dist(d){
+  // return Math.abs((d.s.curθ - d.e.θ) % Math.PI*2) < .3
 
+  var dx = d.s.pos[0] - d.e.pos[0]
+  var dy = d.s.pos[1] - d.e.pos[1]
 
-
-
-
-
-
-
-
-
+  return dx*dx + dy*dy < 10000
+}
 
 
 
