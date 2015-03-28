@@ -6,6 +6,8 @@ var effects = {}
 // }).toMaster();
 
 
+effects.chorus = new Tone.Chorus(4, 2.5, 0.5).toMaster()
+
 effects.feedbackDelay = new Tone.PingPongDelay({
   "delayTime" : "8n",
   "feedback" : 0.6,
@@ -60,6 +62,11 @@ var color = d3.scale.category10()
 var circles = svg.dataAppend(sounds, 'circle')
     .attr('r', 10)
     .attr('fill', ƒ('player', 'str', color))
+    .on('click', function(d){
+      d.player = players[~~(Math.random()*players.length)]
+      d3.select(this).style('fill', ƒ('player', 'str', color))
+    })
+    .style({cursor: 'pointer'})
 
 
 effectsArray.forEach(function(d, i){
@@ -74,7 +81,7 @@ sounds.forEach(function(s){
 })
 
 var lines = svg.dataAppend(pairs, 'path')
-    .style({'stroke': 'black'})
+    .style({'stroke': 'black', 'pointer-events': 'none'})
 
 var shapes = svg.dataAppend(effectsArray, 'path')
     .attr('d', ['M', [-5,-5], 'L', [3, -5], 'L', [5,5], 'L', [-5,5], 'L', [-10, 5]].join(''))
