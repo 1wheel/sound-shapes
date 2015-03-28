@@ -54,7 +54,7 @@ var svg = d3.select('body')
     .translate([margin + s/2, margin + s/2])
 
 
-var sounds = d3.range(0, 2*Math.PI, .3).map(function(d){
+var sounds = d3.range(0, 2*Math.PI, .45).map(function(d){
   var rv = {θ: d}
   rv.player = players[~~(Math.random()*players.length)]
   return rv
