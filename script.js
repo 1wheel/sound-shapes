@@ -17,14 +17,23 @@ var effectsArray = d3.entries(effects)
 //play a snare sound through it
 var snare = function(){ return new Tone.Player("snare.mp3") }
 
-var players = ['snare', 'agogoHigh', 'agogoLow', 'B1', 'hh', 'hho', 'kick'].map(function(str){
-  var rv = {str: str}
-  rv.effects = {}
-  effectsArray.forEach(function(e){
-    rv.effects[e.key] = (new Tone.Player('sounds/' + str + '.mp3')).connect(e.value)
+var players = [
+    'snare', 
+    // 'agogoHigh', 
+    // 'agogoLow', 
+    // 'B1', 
+    'hh', 
+    // 'hho', 
+    'kick'
+  ]
+  .map(function(str){
+    var rv = {str: str}
+    rv.effects = {}
+    effectsArray.forEach(function(e){
+      rv.effects[e.key] = (new Tone.Player('sounds/' + str + '.mp3')).connect(e.value)
+    })
+    return rv
   })
-  return rv
-})
 
 var s = 540
 var margin = 20
@@ -71,7 +80,7 @@ var shapes = svg.dataAppend(effectsArray, 'path')
 d3.timer(function(t){
 
   sounds.forEach(function(d){
-    d.curθ = (d.θ + t/4000) 
+    d.curθ = (d.θ + t/2000) 
     d.pos = [Math.cos(d.curθ)*iR, Math.sin(d.curθ)*iR]
   })
 
@@ -88,6 +97,12 @@ d3.timer(function(t){
       return !d.active && dist(d) })
     .forEach(function(d){
       d.active = true
+
+      try{
+        d.s.player.effects[d.e.key].start()
+      } catch(e){
+
+      }
     })
 
   pairs
