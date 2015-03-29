@@ -1,11 +1,5 @@
 var effects = {}
 
-// effects.panner = new Tone.AutoPanner({
-//   "frequency" : .5,
-//   "amount" : 0
-// }).toMaster();
-
-
 effects.chorus = new Tone.Chorus(4, 2.5, 0.5).toMaster()
 effects.bitCrusher = new Tone.BitCrusher(6).toMaster()
 effects.autoWah = new Tone.AutoWah(100, 6, -20).toMaster()
@@ -18,19 +12,18 @@ effects.feedbackDelay = new Tone.PingPongDelay({
 
 var effectsArray = d3.entries(effects)
 
-//play a snare sound through it
 var snare = function(){ return new Tone.Player("snare.mp3") }
 
 var players = [
     'snare', 
-    // 'agogoHigh', 
-    // 'agogoLow', 
     'B1', 
     'D2', 
     'G2',
+    'kick',
+    // 'agogoHigh', 
+    // 'agogoLow', 
     // 'hh', 
     // 'hho', 
-    'kick'
   ]
   .map(function(str){
     var rv = {str: str}
@@ -41,25 +34,11 @@ var players = [
     return rv
   })
 
-var s = 1000
-var margin = 20
-
-var iR = s/4
-var oR = s/2
-
-var svg = d3.select('body')
-  .append('svg')
-    .attr({height: s + margin*2, width: s + margin*2})
-  .append('g')
-    .translate([margin + s/2, margin + s/2])
-
-
 var sounds = d3.range(0, 2*Math.PI, .45).map(function(d){
   var rv = {θ: d}
   rv.player = players[~~(Math.random()*players.length)]
   return rv
 })
-
 
 effectsArray.forEach(function(d, i){
   d.θ = 2*Math.PI*i/effectsArray.length
@@ -74,9 +53,19 @@ sounds.forEach(function(s){
 })
 
 
+var s = 1000
+var margin = 20
+
+var iR = s/4
+var oR = s/2
+
 var color = d3.scale.category10()
 
-
+var svg = d3.select('body')
+  .append('svg')
+    .attr({height: s + margin*2, width: s + margin*2})
+  .append('g')
+    .translate([margin + s/2, margin + s/2])
 
 var lines = svg.dataAppend(pairs, 'path')
     .style({'stroke': 'black', 'pointer-events': 'none'})
@@ -113,18 +102,19 @@ shapes.append('text')
 
 d3.timer(function(t){
 
-  sounds.forEach(function(d){
-    d.curθ = (d.θ + t/3000) 
-    d.pos = [Math.cos(d.curθ)*iR, Math.sin(d.curθ)*iR]
-  })
+  circles
+      .each(function(d){
+        d.curθ = d.θ + t/3000 
+        d.pos = [Math.cos(d.curθ)*iR, Math.sin(d.curθ)*iR]
+      })
+      .translate(ƒ('pos'))
 
-  effectsArray.forEach(function(d){
-    d.pos = [Math.cos(d.θ + -t*0.0001)*oR, Math.sin(d.θ + -t*0.0001)*oR]
-  })
-
-
-  circles.translate(ƒ('pos'))
-  shapes.translate(ƒ('pos'))
+  shapes
+      .each(function(d){
+        d.curθ = d.θ - t*0.0001
+        d.pos = [Math.cos(d.curθ)*oR, Math.sin(d.curθ)*oR]
+      })
+      .translate(ƒ('pos'))
 
   pairs
     .filter(function(d){
@@ -139,10 +129,7 @@ d3.timer(function(t){
         d.s.player.effects[d.e.key].start()
         d.s.sel.transition().duration(500)
             .attr('r', 50)
-      } catch(e){
-        console.log('e')
-
-      }
+      } catch(e){}
     })
 
   pairs
@@ -152,16 +139,12 @@ d3.timer(function(t){
       d.active = false
       d.s.sel.transition().duration(500)
           .attr('r', 10)
-
     })
 
-
   lines
-      // .style('stroke', function(d){ return d.active ? 'green' : 'blue' })
       .style('opacity', function(d){ return d.active ? 1 : .05 })
       .attr('d', function(d){
         return ['M', d.e.pos, 'L', d.s.pos].join('') })
-
 })
 
 

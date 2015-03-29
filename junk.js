@@ -45,3 +45,8 @@ Tone.Transport.start();
 
 //osc.start()
 
+
+// effects.panner = new Tone.AutoPanner({
+//   "frequency" : .5,
+//   "amount" : 0
+// }).toMaster();
