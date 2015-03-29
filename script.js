@@ -12,7 +12,6 @@ effects.feedbackDelay = new Tone.PingPongDelay({
 
 var effectsArray = d3.entries(effects)
 
-var snare = function(){ return new Tone.Player("snare.mp3") }
 
 var players = [
     'snare', 
