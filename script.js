@@ -10,7 +10,7 @@ effects.chorus = new Tone.Chorus(4, 2.5, 0.5).toMaster()
 
 effects.feedbackDelay = new Tone.PingPongDelay({
   "delayTime" : "8n",
-  "feedback" : 0.6,
+  "feedback" : 0.1,
   "wet" : 0.5
 }).toMaster();
 
